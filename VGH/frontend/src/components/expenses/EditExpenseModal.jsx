@@ -13,13 +13,13 @@ export default function EditExpenseModal({ open, onClose, expense, onSaved }) {
     if (!expense) return;
 
     const d = new Date(expense.expense_date);
-    
+
     setForm({
       expense_type: expense.expense_type || "",
       expense_details: expense.expense_details || "",
       expense_amount: expense.expense_amount || "",
-      expense_month: d.getMonth() + 1,
-      expense_year: d.getFullYear(),
+      expense_date: expense.expense_date || "",
+      expense_time: expense.expense_time || "00:00",
     });
   }, [expense]);
 
@@ -30,14 +30,12 @@ export default function EditExpenseModal({ open, onClose, expense, onSaved }) {
   const save = async () => {
     setLoading(true);
     try {
-      const formattedDate = `${form.expense_year}-${String(form.expense_month).padStart(2, '0')}-01`;
-
       await updateExpense(expense.id, {
         expense_type: form.expense_type,
         expense_details: form.expense_type === "Miscellaneous" ? form.expense_details : form.expense_type,
         expense_amount: Number(form.expense_amount),
-        expense_date: formattedDate,
-        expense_time: "00:00",
+        expense_date: form.expense_date,
+        expense_time: form.expense_time,
       });
       onSaved();
       onClose();
@@ -100,28 +98,23 @@ export default function EditExpenseModal({ open, onClose, expense, onSaved }) {
         {/* Date & Time Row -> Month & Year */}
         <div style={styles.row}>
           <div style={styles.field}>
-            <label style={styles.label}>Month</label>
-            <select
-              name="expense_month"
+            <label style={styles.label}>Date</label>
+            <input
+              type="date"
+              name="expense_date"
               style={styles.input}
-              value={form.expense_month}
+              value={form.expense_date}
               onChange={change}
               required
-            >
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {new Date(0, i).toLocaleString('en', { month: 'long' })}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div style={styles.field}>
-            <label style={styles.label}>Year</label>
+            <label style={styles.label}>Time</label>
             <input
-              type="number"
-              name="expense_year"
+              type="time"
+              name="expense_time"
               style={styles.input}
-              value={form.expense_year}
+              value={form.expense_time}
               onChange={change}
               required
             />
