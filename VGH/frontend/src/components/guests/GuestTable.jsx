@@ -1,3 +1,5 @@
+import { formatDate } from "../../utils/dateUtils";
+
 export default function GuestTable({ rows }) {
   if (!rows || rows.length === 0) {
     return (
@@ -31,7 +33,7 @@ export default function GuestTable({ rows }) {
                 {g.guest_name}
               </td>
               <td style={td}>{g.guest_phone || "—"}</td>
-              <td style={td}>{g.guest_dob || "—"}</td>
+              <td style={td}>{formatDate(g.guest_dob)}</td>
               <td style={td}>
                 <span style={docBadge}>{g.guest_document_type}</span>
               </td>

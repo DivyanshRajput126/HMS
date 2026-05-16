@@ -1,3 +1,5 @@
+import { formatDate } from "../../utils/dateUtils";
+
 export default function CustomerTable({ rows, onSettle, onEdit, onDelete }) {
   return (
     <div style={styles.outerWrapper}>
@@ -63,7 +65,7 @@ export default function CustomerTable({ rows, onSettle, onEdit, onDelete }) {
                 <td style={styles.td}>{c.company_name || "-"}</td>
                 <td style={styles.td}>
                   <div style={styles.subInfo}>
-                    <span>{c.dob}</span>
+                    <span>{formatDate(c.dob)}</span>
                     <span style={styles.dot}>•</span>
                     <span>{c.sex}</span>
                   </div>
@@ -81,13 +83,13 @@ export default function CustomerTable({ rows, onSettle, onEdit, onDelete }) {
                   <span style={styles.roomBadge}>Room {c.room_id}</span>
                 </td>
                 <td style={styles.td}>
-                  {new Date(c.checkin_datetime).toLocaleDateString()}
+                  {formatDate(c.checkin_datetime)}
                   <div style={styles.timeText}>{new Date(c.checkin_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                 </td>
                 <td style={styles.td}>
                   {c.checkout_datetime ? (
                     <>
-                      {new Date(c.checkout_datetime).toLocaleDateString()}
+                      {formatDate(c.checkout_datetime)}
                       <div style={styles.timeText}>{new Date(c.checkout_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                     </>
                   ) : (

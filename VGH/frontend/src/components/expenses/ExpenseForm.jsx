@@ -11,8 +11,8 @@ export default function ExpenseForm({ onSaved }) {
     expense_type: "",
     expense_details: "",
     expense_amount: "",
-    expense_month: now.getMonth() + 1,
-    expense_year: now.getFullYear(),
+    expense_date: now.toISOString().split('T')[0],
+    expense_time: now.toTimeString().split(' ')[0].substring(0, 5),
   });
 
   const [loading, setLoading] = useState(false);
@@ -24,25 +24,22 @@ export default function ExpenseForm({ onSaved }) {
     setLoading(true);
 
     try {
-      // Create a date object for the 1st of the selected month
-      const formattedDate = `${form.expense_year}-${String(form.expense_month).padStart(2, '0')}-01`;
-
       await createExpense({
         expense_type: form.expense_type,
         expense_details: form.expense_type === "Miscellaneous" || form.expense_type === "Salary" ? form.expense_details : form.expense_type,
         expense_amount: Number(form.expense_amount),
-        expense_date: formattedDate,
-        expense_time: "00:00",
+        expense_date: form.expense_date,
+        expense_time: form.expense_time,
       });
-
-      // Reset form
-      setForm({
-        expense_type: "",
-        expense_details: "",
-        expense_amount: "",
-        expense_month: now.getMonth() + 1,
-        expense_year: now.getFullYear(),
-      });
+ 
+       // Reset form
+       setForm({
+         expense_type: "",
+         expense_details: "",
+         expense_amount: "",
+         expense_date: now.toISOString().split('T')[0],
+         expense_time: now.toTimeString().split(' ')[0].substring(0, 5),
+       });
 
       onSaved();
     } catch (e) {
@@ -120,28 +117,23 @@ export default function ExpenseForm({ onSaved }) {
 
         <div style={styles.row}>
           <div style={styles.field}>
-            <label style={styles.label}>Month</label>
-            <select
-              style={styles.input}
-              name="expense_month"
-              value={form.expense_month}
-              onChange={change}
-              required
-            >
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {new Date(0, i).toLocaleString('en', { month: 'long' })}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div style={styles.field}>
-            <label style={styles.label}>Year</label>
+            <label style={styles.label}>Date</label>
             <input
               style={styles.input}
-              type="number"
-              name="expense_year"
-              value={form.expense_year}
+              type="date"
+              name="expense_date"
+              value={form.expense_date}
+              onChange={change}
+              required
+            />
+          </div>
+          <div style={styles.field}>
+            <label style={styles.label}>Time</label>
+            <input
+              style={styles.input}
+              type="time"
+              name="expense_time"
+              value={form.expense_time}
               onChange={change}
               required
             />

@@ -1,10 +1,14 @@
+
+import { formatDate } from "../../utils/dateUtils";
+
 export default function ExpenseTable({ data, onEdit, onDelete, isAdmin }) {
   return (
     <div style={styles.wrapper}>
       <table style={styles.table}>
         <thead>
           <tr>
-            <th style={styles.th}>Month & Year</th>
+            <th style={styles.th}>Expense Date</th>
+            <th style={styles.th}>Expense Time</th>
             <th style={styles.th}>Category</th>
             <th style={styles.th}>Description</th>
             <th style={styles.th}>Amount</th>
@@ -23,7 +27,10 @@ export default function ExpenseTable({ data, onEdit, onDelete, isAdmin }) {
             data.map((e) => (
               <tr key={e.id} style={styles.tr} onMouseEnter={(el) => el.currentTarget.style.backgroundColor = "#f8fafc"} onMouseLeave={(el) => el.currentTarget.style.backgroundColor = "transparent"}>
                 <td style={styles.td}>
-                  {new Date(e.expense_date).toLocaleString('en', { month: 'long', year: 'numeric' })}
+                  {formatDate(e.expense_date)}
+                </td>
+                <td style={styles.td}>
+                  {e.expense_time}
                 </td>
                 <td style={styles.td}>
                   <span style={styles.badge}>{e.expense_type}</span>

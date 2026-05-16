@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { fetchMonthlyReport } from "../api/reports";
 import ProfitPie from "../components/reports/ProfitPie";
+import { formatDate } from "../utils/dateUtils";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -29,17 +30,42 @@ export default function Reports() {
     if (!input) return;
 
     const originalBackground = input.style.backgroundColor;
-    input.style.backgroundColor = 'white';
+    input.style.backgroundColor = "white";
 
     try {
-      const canvas = await html2canvas(input, { scale: 2 });
+      const canvas = await html2canvas(input, {
+        scale: 2,
+        useCORS: true,
+      });
+
       const imgData = canvas.toDataURL("image/png");
+
       const pdf = new jsPDF("p", "mm", "a4");
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      // Image dimensions in PDF
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // First page
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      // Additional pages
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+
+        heightLeft -= pdfHeight;
+      }
+
       pdf.save(`Financial_Report_${year}_${month}.pdf`);
     } catch (err) {
       console.error("PDF generation failed:", err);
@@ -177,7 +203,7 @@ export default function Reports() {
                       <td style={styles.td}>{s.full_name} (ID: {s.id})</td>
                       <td style={styles.td}>{s.payment_mode || "N/A"}</td>
                       <td style={styles.td}>{s.amount_collected}</td>
-                      <td style={styles.td}>{s.checkin_datetime ? new Date(s.checkin_datetime).toLocaleDateString() : "N/A"}</td>
+                      <td style={styles.td}>{formatDate(s.checkin_datetime)}</td>
                     </tr>
                   ))
                 ) : (
@@ -194,6 +220,7 @@ export default function Reports() {
                   <th style={styles.th}>Details</th>
                   <th style={styles.th}>Amount (₹)</th>
                   <th style={styles.th}>Date</th>
+                  {/* <th style={styles.th}>Time</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -203,7 +230,8 @@ export default function Reports() {
                       <td style={styles.td}>{e.expense_type}</td>
                       <td style={styles.td}>{e.expense_details || "N/A"}</td>
                       <td style={styles.td}>{e.expense_amount}</td>
-                      <td style={styles.td}>{e.expense_date ? new Date(e.expense_date).toLocaleDateString() : "N/A"}</td>
+                      <td style={styles.td}>{formatDate(e.expense_date)}</td>
+                      {/* <td style={styles.td}>{e.expense_time}</td> */}
                     </tr>
                   ))
                 ) : (

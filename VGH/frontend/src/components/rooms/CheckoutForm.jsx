@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { checkoutByRoom } from "../../api/customers";
+import { formatDateTime } from "../../utils/dateUtils";
 
 const CheckoutForm = ({ customer, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -53,13 +54,7 @@ const CheckoutForm = ({ customer, onSuccess }) => {
     }
   };
 
-  const formatDateTime = (isoString) => {
-    if (!isoString) return "N/A";
-    return new Date(isoString).toLocaleString([], {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  };
+
 
   return (
     <form onSubmit={submit} style={styles.formContainer}>
